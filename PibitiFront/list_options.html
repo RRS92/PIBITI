@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>Listar Pacientes</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+    #voltarBtn {
+        background-color: red;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+</style>
+
+</head>
+<body>
+    <div class="center-container">
+        <h2>Listar Pacientes</h2>
+        <div class="button-group-vertical">
+            <button onclick="window.location.href='list_all.html'">Listar Todos os Pacientes</button>
+            <button onclick="window.location.href='list_by_cpf.html'">Pesquisar por CPF</button>
+        </div>
+        <br>
+        <button id="voltarBtn" onclick="window.location.href='home.html'">Voltar</button>
+    </div>
+</body>
+</html>

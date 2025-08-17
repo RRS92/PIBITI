@@ -1,0 +1,159 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+}
+
+/* Body e fundo */
+body {
+    background: #f0f4f8;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Containers centrais e formulários */
+.form-container, .center-container, .container {
+    background: white;
+    padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+}
+
+/* Cabeçalhos */
+h1, h2 {
+    margin-bottom: 25px;
+    color: #0077b6;
+}
+
+/* Inputs */
+input[type="text"],
+input[type="password"],
+input[type="number"] {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus {
+    outline: none;
+    border-color: #0077b6;
+}
+
+/* Labels para checkbox e radio */
+label {
+    display: block;
+    margin-bottom: 15px;
+    font-weight: 600;
+    text-align: left;
+}
+
+label input[type="checkbox"],
+label input[type="radio"] {
+    margin-left: 10px;
+    margin-right: 5px;
+}
+
+/* Botões principais */
+button {
+    background-color: #0077b6;
+    color: white;
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin: 10px 5px;
+}
+
+button:hover {
+    background-color: #005f87;
+}
+
+/* Grupos de botões centralizados lado a lado */
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+/* Grupos de botões um em cima do outro */
+.button-group-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+/* Tabela */
+.table-container {
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+}
+
+thead tr {
+    background-color: #0077b6;
+    color: white;
+}
+
+thead th, tbody td {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Botões dentro da tabela */
+table button {
+    padding: 5px 10px;
+    font-size: 0.9rem;
+    border-radius: 4px;
+}
+
+table button:hover {
+    opacity: 0.85;
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+    .button-group {
+        flex-direction: column;
+    }
+    .form-container, .center-container, .container {
+        max-width: 100%;
+        padding: 20px;
+    }
+    input[type="text"], input[type="password"], input[type="number"] {
+        font-size: 1rem;
+    }
+    button {
+        font-size: 1rem;
+        padding: 10px;
+    }
+}
+

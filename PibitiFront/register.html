@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro - Sistema de Hiperlactatemia</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="form-container">
+        <h2>Criar Conta</h2>
+        <input type="text" id="registerUserName" placeholder="Usuário">
+        <input type="text" id="registerMatricula" placeholder="Matrícula">
+        <input type="password" id="registerPassword" placeholder="Senha">
+        <button id="btnRegister">Cadastrar</button>
+        <p>Já tem conta? <a href="login.html">Entrar</a></p>
+    </div>
+
+<script type="module">
+    import { API_BASE_URL } from './config.js';
+
+    // Helper para incluir header ngrok em todos os fetches
+    async function apiFetch(url, options = {}) {
+        options.headers = {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true',
+            ...(options.headers || {})
+        };
+        return fetch(`${API_BASE_URL}${url}`, options);
+    }
+
+    async function register() {
+        const userName = document.getElementById('registerUserName').value.trim();
+        const matricula = document.getElementById('registerMatricula').value.trim();
+        const password = document.getElementById('registerPassword').value;
+
+        if (!userName || !matricula || !password) {
+            alert('Por favor, preencha todos os campos');
+            return;
+        }
+
+        try {
+            const res = await apiFetch('/user/create', {
+                method: 'POST',
+                body: JSON.stringify({ userName, matricula, password })
+            });
+
+            if (res.ok) {
+                alert('Cadastro realizado com sucesso!');
+                window.location.href = 'login.html';
+            } else {
+                const json = await res.json();
+                alert('Erro ao cadastrar: ' + (json.message || 'Erro desconhecido'));
+            }
+        } catch (err) {
+            alert('Erro ao cadastrar: ' + err.message);
+        }
+    }
+
+    document.getElementById('btnRegister').addEventListener('click', register);
+</script>
+
+</body>
+</html>

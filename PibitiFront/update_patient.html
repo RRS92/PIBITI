@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>Editar Paciente</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="form-container">
+        <h2>Editar Paciente</h2>
+        <input type="text" id="nome" placeholder="Nome">
+        <input type="text" id="cpf" placeholder="CPF">
+
+        <input type="number" id="pre_hematocrit" placeholder="Pré-Hematócrito">
+        <input type="number" id="pre_hemoglobin" placeholder="Pré-Hemoglobina">
+        <input type="number" id="pre_lactate" placeholder="Pré-Lactato">
+        <input type="number" id="height" placeholder="Altura (m)" step="0.01">
+        <input type="number" id="cpb" placeholder="CPB (min)">
+        <input type="number" id="anoxia" placeholder="Anóxia (min)">
+        <input type="number" id="age" placeholder="Idade">
+
+        <label>Reoperação:
+            <input type="checkbox" id="redo">
+        </label>
+
+        <label>Sexo:
+            <input type="radio" name="sexo" value="0"> Masculino
+            <input type="radio" name="sexo" value="1"> Feminino
+        </label>
+
+        <label>Paciente Febril:
+            <input type="radio" name="febril" value="0"> Sim
+            <input type="radio" name="febril" value="1"> Não
+        </label>
+
+        <button id="btnUpdate">Atualizar</button>
+        <button id="btnCancelar">Cancelar</button>
+    </div>
+
+<script type="module">
+    import { API_BASE_URL } from './config.js';
+
+    async function apiFetch(url, options = {}) {
+        options.headers = {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true',
+            ...(options.headers || {})
+        };
+        return fetch(`${API_BASE_URL}${url}`, options);
+    }
+
+    async function carregarPaciente() {
+        const cpf = sessionStorage.getItem('cpf_to_edit');
+        if (!cpf) {
+            alert('CPF não fornecido');
+            window.location.href = 'list_options.html';
+            return;
+        }
+
+        const res = await apiFetch(`/paciente/${cpf}`);
+        if (!res.ok) {
+            alert('Paciente não encontrado');
+            window.location.href = 'list_options.html';
+            return;
+        }
+
+        const data = await res.json();
+        const p = data.message;
+
+        document.getElementById('nome').value = p.nome;
+        document.getElementById('cpf').value = p.cpf;
+        document.getElementById('pre_hematocrit').value = p.pre_hematocrit ?? '';
+        document.getElementById('pre_hemoglobin').value = p.pre_hemoglobin ?? '';
+        document.getElementById('pre_lactate').value = p.pre_lactate ?? '';
+        document.getElementById('height').value = p.height ?? '';
+        document.getElementById('cpb').value = p.cpb ?? '';
+        document.getElementById('anoxia').value = p.anoxia ?? '';
+        document.getElementById('age').value = p.age ?? '';
+
+        document.getElementById('redo').checked = p.redo == 1;
+        const sexoInput = document.querySelector(`input[name="sexo"][value="${p.female}"]`);
+        if(sexoInput) sexoInput.checked = true;
+        const febrilInput = document.querySelector(`input[name="febril"][value="${p.normothermia}"]`);
+        if(febrilInput) febrilInput.checked = true;
+    }
+
+    function parseNumber(value) {
+        const num = parseFloat(value);
+        return isNaN(num) ? 0 : num;
+    }
+
+    async function updatePatient() {
+        const originalCpf = sessionStorage.getItem('cpf_to_edit');
+
+        const payload = {
+            nome: document.getElementById('nome').value,
+            cpf: document.getElementById('cpf').value,
+            pre_hematocrit: parseNumber(document.getElementById('pre_hematocrit').value),
+            pre_hemoglobin: parseNumber(document.getElementById('pre_hemoglobin').value),
+            pre_lactate: parseNumber(document.getElementById('pre_lactate').value),
+            height: parseNumber(document.getElementById('height').value),
+            cpb: parseNumber(document.getElementById('cpb').value),
+            anoxia: parseNumber(document.getElementById('anoxia').value),
+            redo: document.getElementById('redo').checked ? 1 : 0,
+            female: parseInt(document.querySelector('input[name="sexo"]:checked')?.value ?? 0),
+            age: parseInt(document.getElementById('age').value) || 0,
+            normothermia: parseInt(document.querySelector('input[name="febril"]:checked')?.value ?? 1)
+        };
+
+        try {
+            const res = await apiFetch(`/paciente/update/${originalCpf}`, {
+                method: 'PUT',
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                alert('Paciente atualizado com sucesso!');
+                sessionStorage.removeItem('cpf_to_edit');
+                window.location.href = 'list_options.html';
+            } else {
+                const errorData = await res.json();
+                alert('Erro ao atualizar paciente: ' + (errorData.error || 'Erro desconhecido'));
+            }
+        } catch (err) {
+            alert('Erro ao atualizar paciente: ' + err.message);
+        }
+    }
+
+    document.getElementById('btnUpdate').addEventListener('click', updatePatient);
+    document.getElementById('btnCancelar').addEventListener('click', () => window.location.href='list_options.html');
+
+    carregarPaciente();
+</script>
+</body>
+</html>

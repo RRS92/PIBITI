@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <title>Adicionar Paciente</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        .btn-voltar {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 15px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <h2>Novo Paciente</h2>
+    <input type="text" id="nome" placeholder="Nome" />
+    <input type="text" id="cpf" placeholder="CPF" />
+    <input type="number" id="pre_hematocrit" placeholder="Pré-Hematócrito" />
+    <input type="number" id="pre_hemoglobin" placeholder="Pré-Hemoglobina" step="0.01" />
+    <input type="number" id="pre_lactate" placeholder="Pré-Lactato" />
+    <input type="number" id="height" placeholder="Altura (m)" step="0.01" />
+    <input type="number" id="cpb" placeholder="CPB (min)" />
+    <input type="number" id="anoxia" placeholder="Anóxia (min)" />
+    <input type="number" id="age" placeholder="Idade" />
+    
+    <label>Reoperação:
+        <input type="checkbox" id="redo" />
+    </label>
+
+    <label>Sexo:
+        <input type="radio" name="sexo" value="0" /> Masculino
+        <input type="radio" name="sexo" value="1" /> Feminino
+    </label>
+
+    <label>Paciente Febril:
+        <input type="radio" name="febril" value="0" /> Sim
+        <input type="radio" name="febril" value="1" /> Não
+    </label>
+
+    <button id="btnEnviar">Enviar</button>
+    <button class="btn-voltar" id="btnVoltar">Voltar</button>
+</div>
+
+<script type="module">
+    import { API_BASE_URL } from './config.js';
+
+    // Helper para todos os fetches com ngrok header
+    async function apiFetch(url, options = {}) {
+        options.headers = {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true',
+            ...(options.headers || {})
+        };
+        return fetch(`${API_BASE_URL}${url}`, options);
+    }
+
+    function validarAviso(valor, min, max, nomeCampo) {
+        if (valor < min || valor > max) {
+            alert(`Atenção: o valor de ${nomeCampo} está fora da faixa usual (${min} – ${max}). Valores muito discrepantes podem alterar os resultados finais.`);
+        }
+    }
+
+    // Eventos blur para validação
+    document.getElementById('pre_hematocrit').addEventListener('blur', (e) => {
+        validarAviso(parseFloat(e.target.value), 36, 50, 'Hematócrito');
+    });
+    document.getElementById('pre_hemoglobin').addEventListener('blur', (e) => {
+        validarAviso(parseFloat(e.target.value), 12, 17.5, 'Hemoglobina');
+    });
+    document.getElementById('pre_lactate').addEventListener('blur', (e) => {
+        validarAviso(parseFloat(e.target.value), 0.5, 2.2, 'Lactato');
+    });
+
+    async function addPatient() {
+        const nome = document.getElementById('nome').value;
+        const cpf = document.getElementById('cpf').value;
+        const pre_hematocrit = parseFloat(document.getElementById('pre_hematocrit').value);
+        const pre_hemoglobin = parseFloat(document.getElementById('pre_hemoglobin').value);
+        const pre_lactate = parseFloat(document.getElementById('pre_lactate').value);
+        const height = parseFloat(document.getElementById('height').value);
+        const cpb = parseFloat(document.getElementById('cpb').value);
+        const anoxia = parseFloat(document.getElementById('anoxia').value);
+        const age = parseInt(document.getElementById('age').value);
+        const redo = document.getElementById('redo').checked ? 1 : 0;
+        const femaleRadio = document.querySelector('input[name="sexo"]:checked');
+        const normothermiaRadio = document.querySelector('input[name="febril"]:checked');
+
+        if (!femaleRadio || !normothermiaRadio) {
+            alert('Por favor, selecione sexo e paciente febril.');
+            return;
+        }
+
+        const female = parseInt(femaleRadio.value);
+        const normothermia = parseInt(normothermiaRadio.value);
+
+        const res = await apiFetch('/paciente', {
+            method: 'POST',
+            body: JSON.stringify({ 
+                nome, cpf, pre_hematocrit, pre_hemoglobin, pre_lactate, 
+                height, cpb, anoxia, redo, female, age, normothermia 
+            })
+        });
+
+        const json = await res.json();
+        if (res.ok) {
+            alert('Paciente criado com sucesso!');
+            window.location.href = 'home.html';
+        } else {
+            alert('Erro ao criar paciente: ' + (json.message || 'Erro desconhecido'));
+        }
+    }
+
+    // Eventos para os botões
+    document.getElementById('btnEnviar').addEventListener('click', addPatient);
+    document.getElementById('btnVoltar').addEventListener('click', () => {
+        window.location.href = 'home.html';
+    });
+
+</script>
+</body>
+</html>
