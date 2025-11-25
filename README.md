@@ -8,21 +8,22 @@ O sistema foi implementado em arquitetura cliente-servidor, com backend em Pytho
 
 # Como rodar o sistema
 
-1º passo:
+1º *passo*:
 
 Use o comando a seguir para rodar a API do backend:
-
+```bash
 poetry run python main.py
-
-2º passo:
+```
+2º *passo*:
 
 No cmd/terminal vá até a pasta do ngrok e dê o comando para iniciar o sistema:
-
+```bash
 cd C:\Program Files\ngrok
-
+```
+```bash
 ngrok.exe http 5000
-
-3º passo:
+```
+3º *passo*:
 
 Pegue a URL disponibilizada pelo ngrok e substitua o URL da variavel "API_BASE_URL" no arquivo config.js no frontend
 
